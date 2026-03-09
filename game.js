@@ -59,12 +59,16 @@
     AUDIO.volumes[src] = volume;
     try {
       const response = await fetch(src);
+      if (!response.ok) throw new Error('Network response was not ok');
       const arrayBuffer = await response.arrayBuffer();
       if (AUDIO.ctx) {
         AUDIO.buffers[src] = await AUDIO.ctx.decodeAudioData(arrayBuffer);
       }
     } catch (e) {
-      console.warn('Failed to load audio:', src, e);
+      console.warn('Failed to load Web Audio (likely CORS/file:// protocol). Using HTML5 Audio fallback:', src);
+      AUDIO.buffers[src] = 'fallback'; // mark as loaded via fallback
+      AUDIO.fallbackAudio = AUDIO.fallbackAudio || {};
+      AUDIO.fallbackAudio[src] = new Audio(src);
     }
   }
 
@@ -104,7 +108,18 @@
   }
 
   function playSfx(src) {
-    if (!AUDIO.unlocked || !AUDIO.ctx || !AUDIO.buffers[src]) return;
+    if (!AUDIO.unlocked || !AUDIO.buffers[src]) return;
+
+    if (AUDIO.buffers[src] === 'fallback') {
+      const a = AUDIO.fallbackAudio[src].cloneNode();
+      // Clamp volume between 0 and 1 for HTML5 Audio
+      const vol = (AUDIO.volumes[src] || 1) * (AUDIO.sfxMaster || 1) * 0.4;
+      a.volume = Math.max(0, Math.min(1, vol));
+      a.play().catch(() => {});
+      return;
+    }
+
+    if (!AUDIO.ctx) return;
     if (AUDIO.ctx.state === 'suspended') AUDIO.ctx.resume();
 
     const source = AUDIO.ctx.createBufferSource();
@@ -210,8 +225,12 @@
   function renderGrid() {
     computeCellSize();
     gridEl.innerHTML = '';
-    gridEl.style.width  = (cellSize * COLS) + 'px';
+    const gridW = cellSize * COLS;
+    gridEl.style.width  = gridW + 'px';
     gridEl.style.height = (cellSize * ROWS) + 'px';
+
+    const hudEl = document.querySelector('.hud');
+    if (hudEl) hudEl.style.width = gridW + 'px';
 
     cellEls = [];
     for (let r = 0; r < ROWS; r++) {
@@ -1033,8 +1052,6 @@
     gridEl        = $('grid');
     gridContainer = $('grid-container');
     initAudio();
-    unlockAudio();
-    startBgm();
 
     addInputListeners();
 
