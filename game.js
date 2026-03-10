@@ -233,6 +233,7 @@
     const gridW = cellSize * COLS;
     gridEl.style.width  = gridW + 'px';
     gridEl.style.height = (cellSize * ROWS) + 'px';
+    gridEl.style.setProperty('--cell-size', cellSize + 'px');
 
     const hudEl = document.querySelector('.hud');
     if (hudEl) hudEl.style.width = gridW + 'px';
@@ -565,7 +566,7 @@
 
     const hLaser = document.createElement('div');
     hLaser.className = 'rainbow-laser-h';
-    hLaser.style.top   = (cy - 18) + 'px';
+    hLaser.style.top   = (cy - cellSize * 0.25) + 'px';
     hLaser.style.left  = '0';
     hLaser.style.width = gridW + 'px';
     hLaser.style.transformOrigin = (cx / gridW * 100) + '% 50%';
@@ -574,7 +575,7 @@
 
     const vLaser = document.createElement('div');
     vLaser.className = 'rainbow-laser-v';
-    vLaser.style.left  = (cx - 18) + 'px';
+    vLaser.style.left  = (cx - cellSize * 0.25) + 'px';
     vLaser.style.top   = '0';
     vLaser.style.height = gridH + 'px';
     vLaser.style.transformOrigin = '50% ' + (cy / gridH * 100) + '%';
@@ -900,7 +901,8 @@
     const { x, y } = clientXY(e);
     const dx = x - startX;
     const dy = y - startY;
-    if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return; // tap, not swipe
+    const threshold = cellSize * 0.15;
+    if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) return; // tap, not swipe
 
     let tr = startRow, tc = startCol;
     if (Math.abs(dx) > Math.abs(dy)) {
