@@ -138,7 +138,7 @@ html, body {
   animation: floatA 3.2s ease-in-out infinite;
 }
 .fm-pos-2 {
-  top: 15%; right: -12%;
+  top: 15%; right: -10%;
   width: 5rem; height: 5rem;
   animation: floatB 3.6s ease-in-out infinite .4s;
 }
@@ -587,27 +587,39 @@ html, body {
 /* ===== RESULT SCREEN ===== */
 .result-content {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 .result-masthead {
   width: 40%;
   max-width: 180px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   object-fit: contain;
   z-index: 20;
 }
 .result-content h2 {
   font-size: 2.2rem; font-weight: 700;
-  margin-bottom: .4rem;
+  margin-bottom: 0;
 }
 .result-content p { font-size: 1.05rem; color: #7a6b8a; font-weight: 600; }
 .result-score {
   font-size: 2.8rem; font-weight: 700;
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem;
   background: linear-gradient(135deg, var(--c-yellow), var(--c-pink));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.result-buttons { display: flex; flex-direction: column; gap: .7rem; margin-top: .6rem; }
+.result-buttons { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1rem; 
+  margin-top: 1rem; 
+  width: 60%;
+  max-width: 300px;
+}
 
 .result-content.win h2 { color: var(--c-pink); }
 .result-content.lose h2 { color: var(--c-blue); }
@@ -652,7 +664,7 @@ html, body {
   background: var(--c-bg-card);
   border-radius: 16px;
   padding: 1rem;
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem;
   width: 80%;
   max-width: 800px;
   box-shadow: 0 2px 10px rgba(0,0,0,.05);
