@@ -133,7 +133,7 @@ html, body {
   z-index: 3;
 }
 .fm-pos-1 {
-  top: -18%; left: 8%;
+  top: -22%; left: 8%;
   width: 4rem; height: 4rem;
   animation: floatA 3.2s ease-in-out infinite;
 }
