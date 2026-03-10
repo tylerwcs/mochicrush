@@ -1,5 +1,5 @@
 /* =========================================================
-   MOCHI POP — Match-3 game for Garnier Mochi vertical kiosk
+   MOCHI CRUSH — Match-3 game for Garnier Mochi vertical kiosk
    ========================================================= */
 
 (() => {
