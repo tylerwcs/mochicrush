@@ -11,6 +11,11 @@
   const NUM_COLORS = 3;
   const GAME_TIME = 45;          // seconds
   const COLOR_NAMES = ['yellow', 'pink', 'blue'];
+  const PRODUCT_IMGS = [
+    'assets/Product-YELLOW.png',
+    'assets/Product-PINK.png',
+    'assets/Product-BLUE.png',
+  ];
 
   const POWERUP_NONE = 0;
   const POWERUP_BOMB = 1;
@@ -525,18 +530,20 @@
     gridEl.appendChild(flash);
     els.push(flash);
 
-    const count = 14;
+    const count = 10;
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
-      p.className = 'bomb-particle';
+      p.className = 'bomb-product-particle';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
-      const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.5;
-      const dist  = cellSize * (1.2 + Math.random() * 0.8);
+      const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 0.25;
+      const dist  = cellSize * (1.0 + Math.random() * 2.0);
       p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
       p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
       p.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
       p.style.animationDelay = (Math.random() * 60) + 'ms';
+      const img = PRODUCT_IMGS[rng(PRODUCT_IMGS.length)];
+      p.style.backgroundImage = `url('${img}')`;
       gridEl.appendChild(p);
       els.push(p);
     }
@@ -546,7 +553,7 @@
     setTimeout(() => {
       els.forEach(e => e.remove());
       gridEl.classList.remove('shake');
-    }, ANIM.powerup + 150);
+    }, 1000);
   }
 
   function showRainbowEffect(r, c) {
@@ -581,26 +588,25 @@
     gridEl.appendChild(crossFlash);
     els.push(crossFlash);
 
-    for (let i = 0; i < COLS; i++) {
+    const sparkCount = 12;
+    for (let i = 0; i < sparkCount; i++) {
       const s = document.createElement('div');
-      s.className = 'rainbow-spark';
-      s.style.left = (i * cellSize + cellSize / 2) + 'px';
-      s.style.top  = cy + 'px';
-      s.style.animationDelay = (Math.abs(i - c) * 25) + 'ms';
-      gridEl.appendChild(s);
-      els.push(s);
-    }
-    for (let i = 0; i < ROWS; i++) {
-      const s = document.createElement('div');
-      s.className = 'rainbow-spark';
+      s.className = 'rainbow-product-spark';
       s.style.left = cx + 'px';
-      s.style.top  = (i * cellSize + cellSize / 2) + 'px';
-      s.style.animationDelay = (Math.abs(i - r) * 25) + 'ms';
+      s.style.top  = cy + 'px';
+      const angle = (Math.PI * 2 * i / sparkCount) + (Math.random() - 0.5) * 0.25;
+      const dist  = cellSize * (1.0 + Math.random() * 2.0);
+      s.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      s.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      s.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+      s.style.animationDelay = (Math.random() * 60) + 'ms';
+      const img = PRODUCT_IMGS[rng(PRODUCT_IMGS.length)];
+      s.style.backgroundImage = `url('${img}')`;
       gridEl.appendChild(s);
       els.push(s);
     }
 
-    setTimeout(() => els.forEach(e => e.remove()), ANIM.powerup + 150);
+    setTimeout(() => els.forEach(e => e.remove()), 1000);
   }
 
   /* ---------- cascade loop ---------- */
