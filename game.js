@@ -258,7 +258,6 @@
   function makeCell(row, col, colorIdx) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-    cell.style.willChange = 'transform';
 
     const pu = powerUpGrid[row][col];
     if (pu === POWERUP_BOMB) cell.classList.add('powerup-bomb');
@@ -541,11 +540,10 @@
     gridEl.appendChild(flash);
     els.push(flash);
 
-    const productCount = 4;
+    const productCount = 6;
     for (let i = 0; i < productCount; i++) {
       const p = document.createElement('div');
       p.className = 'bomb-product-particle';
-      p.style.willChange = 'transform';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
       const angle = (Math.PI * 2 * i / productCount) + (Math.random() - 0.5);
@@ -560,11 +558,10 @@
       els.push(p);
     }
 
-    const sparkCount = 8;
+    const sparkCount = 15;
     for (let i = 0; i < sparkCount; i++) {
       const p = document.createElement('div');
       p.className = 'bomb-particle';
-      p.style.willChange = 'transform';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
       const angle = (Math.PI * 2 * i / sparkCount) + (Math.random() - 0.5);
@@ -576,11 +573,10 @@
       els.push(p);
     }
 
-    const starCount = 4;
+    const starCount = 6;
     for (let i = 0; i < starCount; i++) {
       const p = document.createElement('div');
       p.className = 'bomb-star';
-      p.style.willChange = 'transform';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
       const angle = (Math.PI * 2 * i / starCount) + (Math.random() - 0.5);
@@ -628,7 +624,6 @@
 
             const zap = document.createElement('div');
             zap.className = 'zap-line';
-            zap.style.willChange = 'transform, width';
             zap.style.left = cx + 'px';
             zap.style.top = cy + 'px';
             zap.style.width = dist + 'px';
@@ -642,19 +637,30 @@
             tFlash.style.top = tcy + 'px';
             gridEl.appendChild(tFlash);
             els.push(tFlash);
+
+            const p = document.createElement('div');
+            p.className = 'zap-product-pop';
+            p.style.left = tcx + 'px';
+            p.style.top  = tcy + 'px';
+            p.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+            p.style.animationDelay = (Math.random() * 40) + 'ms';
+            const img = PRODUCT_IMGS[rng(PRODUCT_IMGS.length)];
+            p.style.backgroundImage = `url('${img}')`;
+            gridEl.appendChild(p);
+            els.push(p);
           }
         }
       }
     }
 
-    const sparkCount = 10;
+    const sparkCount = 20;
     for (let i = 0; i < sparkCount; i++) {
       const p = document.createElement('div');
       p.className = 'bomb-particle';
-      p.style.willChange = 'transform';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
-      p.style.background = 'rgba(220, 220, 220, 0.9)';
+      p.style.background = '#aaaaaa';
+      p.style.boxShadow = '0 0 8px 2px rgba(150,150,150,.7)';
       const angle = (Math.PI * 2 * i / sparkCount);
       const dist  = cellSize * (1.5 + Math.random() * 2.5);
       p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
@@ -664,11 +670,10 @@
       els.push(p);
     }
 
-    const productCount = 4;
+    const productCount = 6;
     for (let i = 0; i < productCount; i++) {
       const p = document.createElement('div');
       p.className = 'bomb-product-particle';
-      p.style.willChange = 'transform';
       p.style.left = cx + 'px';
       p.style.top  = cy + 'px';
       const angle = (Math.PI * 2 * i / productCount) + (Math.random() - 0.5);
@@ -700,7 +705,6 @@
 
     const hLaser = document.createElement('div');
     hLaser.className = 'rainbow-laser-h';
-    hLaser.style.willChange = 'transform, opacity';
     hLaser.style.top   = (cy - cellSize * 0.25) + 'px';
     hLaser.style.left  = '0';
     hLaser.style.width = gridW + 'px';
@@ -710,7 +714,6 @@
 
     const vLaser = document.createElement('div');
     vLaser.className = 'rainbow-laser-v';
-    vLaser.style.willChange = 'transform, opacity';
     vLaser.style.left  = (cx - cellSize * 0.25) + 'px';
     vLaser.style.top   = '0';
     vLaser.style.height = gridH + 'px';
@@ -725,11 +728,10 @@
     gridEl.appendChild(crossFlash);
     els.push(crossFlash);
 
-    const sparkCount = 8;
+    const sparkCount = 16;
     for (let i = 0; i < sparkCount; i++) {
       const s = document.createElement('div');
       s.className = 'rainbow-product-spark';
-      s.style.willChange = 'transform';
       s.style.left = cx + 'px';
       s.style.top  = cy + 'px';
       
@@ -967,7 +969,6 @@
     const newPUGrid = Array.from({ length: ROWS }, () => Array(COLS).fill(POWERUP_NONE));
     const sourceRow = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
     const isNew     = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
-    const survivingEls = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
 
     /* group pending power-ups by column (one per column max) */
     const puByCol = {};
@@ -1017,7 +1018,6 @@
           newPUGrid[r][c]  = p.pu;
           sourceRow[r][c]  = p.fromRow;
           isNew[r][c]      = false;
-          survivingEls[r][c] = p.el;
         }
       }
     }
@@ -1025,48 +1025,35 @@
     grid = newGrid;
     powerUpGrid = newPUGrid;
 
-    /* rebuild DOM: reuse surviving cells, only create new ones */
-    const newCellEls = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    /* rebuild DOM: place each piece at source position, then animate to target */
+    gridEl.innerHTML = '';
+    cellEls = [];
 
     for (let r = 0; r < ROWS; r++) {
+      cellEls[r] = [];
       for (let c = 0; c < COLS; c++) {
-        if (isNew[r][c]) {
-          const cell = makeCell(r, c, grid[r][c]);
-          /* start at the source row (above grid for new pieces) */
-          positionCell(cell, sourceRow[r][c], c, false);
-          gridEl.appendChild(cell);
-          newCellEls[r][c] = cell;
-          cell.classList.add('spawning');
-        } else {
-          const cell = survivingEls[r][c];
-          cell.dataset.row = r;
-          cell.dataset.col = c;
-          newCellEls[r][c] = cell;
-        }
+        const cell = makeCell(r, c, grid[r][c]);
+        /* start at the source row (or above grid for new pieces) */
+        positionCell(cell, sourceRow[r][c], c, false);
+        gridEl.appendChild(cell);
+        cellEls[r][c] = cell;
+        if (isNew[r][c]) cell.classList.add('spawning');
       }
     }
-
-    cellEls = newCellEls;
 
     /* force reflow then animate to real positions */
     void gridEl.offsetHeight;
 
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
         positionCell(cellEls[r][c], r, c, true);
-      }
-    }
 
     await delay(ANIM.fall + 60);
 
     /* clean up spawning class */
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        if (isNew[r][c]) {
-          cellEls[r][c].classList.remove('spawning');
-        }
-      }
-    }
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        cellEls[r][c].classList.remove('spawning');
   }
 
   /* =========================================================
@@ -1165,7 +1152,6 @@
 
     const el = document.createElement('div');
     el.className = 'score-float';
-    el.style.willChange = 'transform, opacity';
     el.textContent = '+' + pts;
     el.style.left = (avgC * cellSize + cellSize / 2) + 'px';
     el.style.top  = (avgR * cellSize) + 'px';
@@ -1247,7 +1233,6 @@
     for (let i = 0; i < 40; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
-      c.style.willChange = 'transform, opacity';
       c.style.left = rng(100) + '%';
       c.style.top  = rng(40) + '%';
       c.style.background = colours[rng(colours.length)];
